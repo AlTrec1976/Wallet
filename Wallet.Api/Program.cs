@@ -1,18 +1,16 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.CookiePolicy;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using Wallet.Api.Extensions;
 using Wallet.Common.Entities.Auth;
 using Wallet.DAL.Repository.EF;
-using Wallet.Common.Entities;
+using Wallet.Common.Entities.KafkaModels;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
 // Add services to the container.
 builder.Services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)));
+builder.Services.Configure<Kafka>(configuration.GetSection(nameof(Kafka)));
 
 builder.Services.AddControllers();
 
@@ -26,7 +24,7 @@ builder.Services.ConfigureAuth();
 builder.Services.AddApiAuthentification(configuration);
 
 builder.Services.AddDbContext<DBContext>(options =>
-    options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(configuration.GetConnectionString("DBConnection")));
 
 var app = builder.Build();
 app.UseAuthentication();

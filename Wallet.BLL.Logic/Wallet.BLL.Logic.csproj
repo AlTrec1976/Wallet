@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Wallet.BLL.Logic.Contracts\Wallet.BLL.Logic.Contracts.csproj" />
+    <ProjectReference Include="..\Wallet.Common.Entities\Wallet.Common.Entities.csproj" />
     <ProjectReference Include="..\Wallet.DAL.Repository\Wallet.DAL.Repository.csproj" />
   </ItemGroup>
 

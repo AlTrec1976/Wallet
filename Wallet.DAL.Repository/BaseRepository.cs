@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 using System.Data;
@@ -7,13 +8,13 @@ namespace Wallet.DAL.Repository
 {
     public abstract class BaseRepository
     {
-        private const string CONNECTION_STRING = "Host=192.168.0.2;Port=5432;Database=test;Username=postgres;Password=123456";
-
         private readonly ILogger _logger;
+        private readonly IConfiguration _configuration;
 
-        public BaseRepository(ILogger logger)
+        public BaseRepository(ILogger logger, IConfiguration configuration)
         {
             _logger = logger;
+            _configuration = configuration;
         }
 
         public async Task ExecuteAsync(string sql, object param = null)
@@ -60,7 +61,7 @@ namespace Wallet.DAL.Repository
 
         protected NpgsqlConnection GetConnection()
         {
-            return new NpgsqlConnection(CONNECTION_STRING);
+            return new NpgsqlConnection(_configuration.GetConnectionString("DBConnection"));
         }
     }
 }

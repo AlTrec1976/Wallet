@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Wallet.Common.Entities.Authz;
 using Wallet.Common.Entities.User.DB;
 using Wallet.DAL.Repository.Contracts;
@@ -9,8 +10,8 @@ namespace Wallet.DAL.Repository
     {
         private readonly ILogger<UserRepository> _logger;
 
-        public UserRepository(ILogger<UserRepository> logger) 
-            : base(logger)
+        public UserRepository(ILogger<UserRepository> logger, IConfiguration configuration) 
+            : base(logger, configuration)
         {
             _logger = logger;
         }

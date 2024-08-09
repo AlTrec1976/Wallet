@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Wallet.BLL.Logic.Contracts.Kafka;
 using Wallet.BLL.Logic.Contracts.Notififcation;
 using Wallet.BLL.Logic.Contracts.Users;
-using Wallet.BLL.Logic.Kafka;
 using Wallet.BLL.Logic.Notification;
 using Wallet.BLL.Logic.Users;
 using Wallet.Common.Entities.HttpClientts;
@@ -19,6 +18,7 @@ using Wallet.Common.Entities.Auth;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.Extensions.Options;
+using Wallet.BLL.Logic.KafkaService;
 
 namespace Wallet.Api.Extensions
 {
