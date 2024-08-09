@@ -1,17 +1,22 @@
 ﻿using Confluent.Kafka;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.Text.Json;
 using Wallet.BLL.Logic.Contracts.Kafka;
+using Wallet.Common.Entities.KafkaModels;
 
-namespace Wallet.BLL.Logic.Kafka
+namespace Wallet.BLL.Logic.KafkaService
 {
     public class KafkaProducer : IKafkaProducer
     {
         private readonly ILogger<KafkaProducer> _logger;
+        private readonly IOptions<Kafka> _options;
 
-        public KafkaProducer(ILogger<KafkaProducer> logger)
+
+        public KafkaProducer(ILogger<KafkaProducer> logger, IOptions<Kafka> options)
         {
             _logger = logger;
+            _options = options;
         }
 
         public async Task ProduceAsync(string topic, object message)
@@ -20,7 +25,7 @@ namespace Wallet.BLL.Logic.Kafka
             {
                 var config = new ProducerConfig
                 {
-                    BootstrapServers = "localhost:9092",
+                    BootstrapServers = _options.Value.Connection,
                 };
 
                 using (var producer = new ProducerBuilder<Null, string>(config).Build())

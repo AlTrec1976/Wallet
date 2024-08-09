@@ -22,7 +22,6 @@ namespace Wallet.Api.Controllers
             _userLogic = userLogic;
         }
 
-        [Authorize]
         [AllowAnonymous]
         [HttpGet("{login}/{password}")]
         public async Task<IActionResult> LoginAsync(string login, string password)
@@ -48,13 +47,12 @@ namespace Wallet.Api.Controllers
             }
             catch (Exception ex)
             {
-                //_logger.LogError(ex, "Ошибка в LoginAsync");
-                //throw;
                 return BadRequest(ex.Message);
             }
         }
 
         // GET: api/<UserController>
+        [Authorize]
         [HttpGet]
         public async Task<List<User>> Get()
         {
@@ -62,6 +60,7 @@ namespace Wallet.Api.Controllers
         }
 
         // POST api/<UserController>
+        [AllowAnonymous]
         [HttpPost]
         public async Task PostAsync([FromBody] UserCreateInputModel user)
         {
@@ -70,6 +69,7 @@ namespace Wallet.Api.Controllers
 
 
         // GET api/<UserController>/5
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<User> Get(Guid id)
         {
@@ -77,12 +77,14 @@ namespace Wallet.Api.Controllers
         }
 
         // PUT api/<UserController>/5
+        [Authorize]
         [HttpPut("{id}")]
         public async Task PutAsync(int id, [FromBody] string value)
         {
         }
 
         // DELETE api/<UserController>/5
+        [Authorize]
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
