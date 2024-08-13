@@ -1,0 +1,19 @@
+﻿syntax = "proto3";
+import "google/protobuf/empty.proto";
+
+option csharp_namespace = "EmailServiceClientGrpcApp";
+ 
+package email_service;
+ 
+// определение сервиса
+service EmailServiceGrpc {
+  // отправка сообщения
+  rpc Send (EmailRequest) returns (google.protobuf.Empty);
+}
+ 
+// сообщение от клиента содержит name
+message EmailRequest {
+    string EmailTo = 1;
+    string EmailFrom = 2;
+    string MessageBody = 3;
+}

@@ -11,6 +11,8 @@ using Wallet.BLL.Logic.Contracts.Auth;
 using EmailService.Contracts;
 using Wallet.BLL.Logic.Contracts.Notififcation;
 using Wallet.BLL.Logic.Auth;
+using static EmailServiceClientGrpcApp.EmailServiceGrpc;
+using EmailServiceClientGrpcApp;
 
 namespace Wallet.BLL.Logic.Users
 {
@@ -22,12 +24,14 @@ namespace Wallet.BLL.Logic.Users
         private readonly ILogger<UserLogic> _logger;
         private readonly IPasswordHasher _passwordHasher;
         private readonly IJwtProvider _jwtProvider;
+        private readonly EmailServiceGrpcClient _emailService;
 
         public UserLogic(
             IEFUserRepository eFUserRepository,
             INotificationLogic notification,
             ILogger<UserLogic> logger,
             IPasswordHasher passwordHasher,
+            EmailServiceGrpcClient emailService,
             IJwtProvider jwtProvider
             )
         {
@@ -36,6 +40,7 @@ namespace Wallet.BLL.Logic.Users
             _logger = logger;
             _passwordHasher = passwordHasher;
             _jwtProvider = jwtProvider;
+            _emailService = emailService;
         }
 
         public async Task CreateUserAsync(UserCreateInputModel userInputModel)
@@ -58,8 +63,13 @@ namespace Wallet.BLL.Logic.Users
                 await _eFUserRepository.Create(user);
                 _logger.LogInformation($"Id user: {user.Id}");
 
-                var emailMsg = new EmailServiceMessage { EmailFrom = "somemail@altrec.ru", EmailTo = user.Email, MessageBody = "Вы зарегистрированы"};
-                await _notification.SendAsync(emailMsg);
+                // отправка через Kafka
+                //var emailMsg = new EmailServiceMessage { EmailFrom = "somemail@altrec.ru", EmailTo = user.Email, MessageBody = "Вы зарегистрированы" };
+                //await _notification.SendAsync(emailMsg);
+
+                // отправка через gRPC
+                var emailMsg = new EmailRequest { EmailFrom = "somemail@altrec.ru", EmailTo = user.Email, MessageBody = "Вы зарегистрированы" };
+                await _emailService.SendAsync(emailMsg);
             }
             catch (Exception ex)
             {

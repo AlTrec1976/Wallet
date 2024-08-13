@@ -4,6 +4,7 @@ using Wallet.Api.Extensions;
 using Wallet.Common.Entities.Auth;
 using Wallet.DAL.Repository.EF;
 using Wallet.Common.Entities.KafkaModels;
+using Wallet.BLL.Grpc;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -12,6 +13,7 @@ var configuration = builder.Configuration;
 builder.Services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)));
 builder.Services.Configure<Kafka>(configuration.GetSection(nameof(Kafka)));
 
+builder.Services.ConfigureGrpc();
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -47,6 +49,7 @@ app.UseCookiePolicy(new CookiePolicyOptions
 app.UseAuthentication();
 app.UseAuthorization();
 
+//app.MapGrpcService<GreeterService>();
 app.MapControllers();
 
 app.Run();
