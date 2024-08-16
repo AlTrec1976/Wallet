@@ -13,6 +13,7 @@ using Wallet.BLL.Logic.Contracts.Notififcation;
 using Wallet.BLL.Logic.Auth;
 using static EmailServiceClientGrpcApp.EmailServiceGrpc;
 using EmailServiceClientGrpcApp;
+using Wallet.Common.Entities.UserModels.InputModels;
 
 namespace Wallet.BLL.Logic.Users
 {
@@ -24,14 +25,14 @@ namespace Wallet.BLL.Logic.Users
         private readonly ILogger<UserLogic> _logger;
         private readonly IPasswordHasher _passwordHasher;
         private readonly IJwtProvider _jwtProvider;
-        private readonly EmailServiceGrpcClient _emailService;
+        //private readonly EmailServiceGrpcClient _emailService;
 
         public UserLogic(
             IEFUserRepository eFUserRepository,
             INotificationLogic notification,
             ILogger<UserLogic> logger,
             IPasswordHasher passwordHasher,
-            EmailServiceGrpcClient emailService,
+            //EmailServiceGrpcClient emailService,
             IJwtProvider jwtProvider
             )
         {
@@ -40,7 +41,7 @@ namespace Wallet.BLL.Logic.Users
             _logger = logger;
             _passwordHasher = passwordHasher;
             _jwtProvider = jwtProvider;
-            _emailService = emailService;
+            //_emailService = emailService;
         }
 
         public async Task CreateUserAsync(UserCreateInputModel userInputModel)
@@ -64,12 +65,12 @@ namespace Wallet.BLL.Logic.Users
                 _logger.LogInformation($"Id user: {user.Id}");
 
                 // отправка через Kafka
-                //var emailMsg = new EmailServiceMessage { EmailFrom = "somemail@altrec.ru", EmailTo = user.Email, MessageBody = "Вы зарегистрированы" };
-                //await _notification.SendAsync(emailMsg);
+                var emailMsg = new EmailServiceMessage { EmailFrom = "somemail@altrec.ru", EmailTo = user.Email, MessageBody = "Вы зарегистрированы" };
+                await _notification.SendAsync(emailMsg);
 
                 // отправка через gRPC
-                var emailMsg = new EmailRequest { EmailFrom = "somemail@altrec.ru", EmailTo = user.Email, MessageBody = "Вы зарегистрированы" };
-                await _emailService.SendAsync(emailMsg);
+                //var emailMsg = new EmailRequest { EmailFrom = "somemail@altrec.ru", EmailTo = user.Email, MessageBody = "Вы зарегистрированы" };
+                //await _emailService.SendAsync(emailMsg);
             }
             catch (Exception ex)
             {
@@ -79,6 +80,42 @@ namespace Wallet.BLL.Logic.Users
         }
 
 
+        public async Task UpdateUserAsync(UserUpdateInputModel userInputModel)
+        {
+            try
+            {
+                using(var transaction = new TransactionScope())
+                ValidateUser(userInputModel);
+                var _hashedPassword = _passwordHasher.Generate(userInputModel.Password);
+
+                var user = new User
+                {
+                    Id = userInputModel.Id,
+                    Name = userInputModel.Name,
+                    Email = userInputModel.Email,
+                    Login = userInputModel.Login,
+                    Password = _hashedPassword,
+                    Surname = userInputModel.Surname
+                };
+
+                await _eFUserRepository.Update(user);
+                _logger.LogInformation($"Id user: {user.Id}");
+
+                // отправка через Kafka
+                var emailMsg = new EmailServiceMessage { EmailFrom = "somemail@altrec.ru", EmailTo = user.Email, MessageBody = "Данные успешно изменены" };
+                await _notification.SendAsync(emailMsg);
+
+                // отправка через gRPC
+                //var emailMsg = new EmailRequest { EmailFrom = "somemail@altrec.ru", EmailTo = user.Email, MessageBody = "Вы зарегистрированы" };
+                //await _emailService.SendAsync(emailMsg);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Произошла ошибка при создании User");
+                throw;
+            }
+        }
+
         public async Task<List<User>> Get()
         {
             return await _eFUserRepository.GetAllAsync();
@@ -87,8 +124,8 @@ namespace Wallet.BLL.Logic.Users
         public async Task<User> Get(Guid id)
         {
             var user = await _eFUserRepository.GetAsync(id);
-            user.Name = "Tom";
-            await _eFUserRepository.SomeWorkAsync();
+            //user.Name = "Tom";
+            //await _eFUserRepository.SomeWorkAsync();
             return user;
         }
 

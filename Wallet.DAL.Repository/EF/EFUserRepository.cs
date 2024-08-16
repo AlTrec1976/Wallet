@@ -17,6 +17,12 @@ namespace Wallet.DAL.Repository.EF
             await _dbContext.SaveChangesAsync();
         }
 
+        public async Task Update(User user)
+        {
+            _dbContext.Users.Update(user);
+            await _dbContext.SaveChangesAsync();
+        }
+
         public async Task<List<User>> GetAllAsync()
         {
             return await _dbContext.Users.ToListAsync();
