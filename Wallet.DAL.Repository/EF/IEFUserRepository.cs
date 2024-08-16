@@ -10,6 +10,7 @@ namespace Wallet.DAL.Repository.EF
     public interface IEFUserRepository
     {
         Task Create(User user);
+        Task Update(User user);
         Task<List<User>> GetAllAsync();
         Task<User?> GetAsync(Guid userId);
         Task<User?> GetByUserLoginAsync(string userLogin);

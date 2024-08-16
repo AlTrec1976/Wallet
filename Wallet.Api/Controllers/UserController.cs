@@ -5,6 +5,7 @@ using Wallet.BLL.Logic.Contracts.Users;
 using Wallet.BLL.Logic.Users;
 using Wallet.Common.Entities.User.DB;
 using Wallet.Common.Entities.User.InputModels;
+using Wallet.Common.Entities.UserModels.InputModels;
 
 namespace Wallet.Api.Controllers
 {
@@ -79,8 +80,19 @@ namespace Wallet.Api.Controllers
         // PUT api/<UserController>/5
         [Authorize]
         [HttpPut("{id}")]
-        public async Task PutAsync(int id, [FromBody] string value)
+        public async Task PutAsync(Guid id, [FromBody] UserCreateInputModel user)
         {
+            var request = new UserUpdateInputModel
+            {
+                Id = id,
+                Login = user.Login,
+                Email = user.Email,
+                Password = user.Password,
+                Name = user.Name,
+                Surname = user.Surname, 
+            };
+
+            await _userLogic.UpdateUserAsync(request);
         }
 
         // DELETE api/<UserController>/5
